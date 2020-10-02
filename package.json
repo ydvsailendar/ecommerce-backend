@@ -1,0 +1,23 @@
+{
+  "name": "ecommerce-backend",
+  "version": "1.0.0",
+  "description": "e-commerce backend ",
+  "main": "server.js",
+  "repository": "git@github.com:ydvsailendar/ecommerce-backend.git",
+  "author": "ydvsailendar <ydvsailendar0905@gmail.com>",
+  "license": "GNU",
+  "private": true,
+  "scripts": {
+    "dev": "nodemon server.js",
+    "seed": "node ./seeders/add.js",
+    "clear": "node ./seeders/remove.js"
+  },
+  "dependencies": {
+    "graphql-yoga": "^1.18.3",
+    "mongoose": "^5.10.7"
+  },
+  "devDependencies": {
+    "dotenv": "^8.2.0",
+    "nodemon": "^2.0.4"
+  }
+}
