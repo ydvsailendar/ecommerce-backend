@@ -44,6 +44,22 @@ query{
   }
 }
 
+query($id:ID!){
+  Product(id:$id){
+    _id
+    name
+    description
+    thumbnail
+    price
+    count
+    reviews{
+      rating
+      comment
+      user
+    }
+  }
+}
+
 mutation($user:ID!, $productId: ID!, $comment: String, $rating: Int ){
   addReview(user:$user, productId: $productId, comment: $comment, rating: $rating){
 		user
@@ -64,7 +80,63 @@ mutation($user:ID!, $productId: ID! ){
   deleteReview(user:$user, productId: $productId)
 }
 
+query{
+  Users{
+    _id
+    name
+    email
+    password
+    age
+    gender
+    address
+    token
+  }
+}
+
+query($id:ID!){
+  User(id:$id){
+    _id
+    address
+    name
+    password
+    email
+    age
+    gender
+  }
+}
+
+mutation($name: String!, $email:String!, $password:String!, $gender: String!, $age:Int!, $address: String!, $phone:String!){
+  signUp(name:$name, email:$email, password:$password, gender:$gender, age:$age, address:$address, phone:$phone){
+    token
+    expiresIn
+  }
+}
+
+mutation($email:String, $password:String!){
+  signIn(email:$email, password:$password){
+    token
+    expiresIn
+  }
+}
+
+mutation($token:String!){
+  refreshToken(token:$token){
+    token
+    expiresIn
+  }
+}
+
+mutation($id:ID!){
+  removeUser(id: $id)
+}
+
 ### Query Variables
+
+- get product
+
+{
+  "id": "5f75be6a341f27d149df023b"
+}
 
 - add product
 
@@ -109,3 +181,33 @@ mutation($user:ID!, $productId: ID! ){
   	"productId": "5f76c4d7dd9cb33f8e7dd5e7"
   }
 
+- get/remove user
+
+{
+  "id": "5f76ffe3791d4b9982975a5a"
+}
+
+- sign up
+
+{
+  "name": "mr john doe",
+  "email": "johndoe@gmail.com",
+  "password": "John@123#",
+  "address": "Georgia, WashingtonDC, USA",
+  "age": 20,
+  "gender": "Male",
+  "phone": "+16783779891"
+}
+
+- sign in
+
+{
+  "email": "johndoe@gmail.com",
+  "password": "John@123#"
+}
+
+- refresh token
+
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InB1amFAZ21haWwuY29tIiwiaWF0IjoxNjAxNjM1NTAzLCJleHAiOjE2MDE2MzkxMDN9.p6oLVACpqMYwmGUhiFw0y0BTe6k_j64xQCsds1JeUw0"
+}

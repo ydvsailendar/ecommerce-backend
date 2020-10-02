@@ -13,6 +13,18 @@ const typeDefs = `
     addReview(user: ID! comment: String rating: Int productId: ID!): Review!
     updateReview(user: ID! comment: String rating: Int productId: ID!): Review!
     deleteReview(user: ID!, productId: ID!): ID!
+    signUp(name: String! email: String! password: String! age: Int! gender: String! address: String! phone: String!): TokenParams!
+    signIn(email: String phone: String password: String!): TokenParams!
+    updateUser(token: String! phone: String name: String address: String, gender: String, age: Int): User!
+    refreshToken(token: String!): TokenParams!
+    changePassword(token: String! newPassword: String! oldPassword: String!): String!
+    forgotPassword(email: String! newPassword: String!): String!
+    removeUser(id: ID!): ID!
+  }
+
+  type TokenParams {
+    token: String!
+    expiresIn: String!
   }
 
   type Subscription {
@@ -46,6 +58,11 @@ const typeDefs = `
     address: String!
     gender: String!
     age: String!
+    token: String!
+    expiresIn: String!
+    phone: String!
+    createdAt: String
+    updatedAt: String
   }
 `;
 
