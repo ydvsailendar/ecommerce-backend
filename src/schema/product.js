@@ -7,13 +7,13 @@ const productSchema = new Schema(
       type: String,
       required: true,
       minlength: 6,
-      maxlength: 20
+      maxlength: 30
     },
     description: {
       type: String,
       required: true,
       minlength: 20,
-      maxlength: 100
+      maxlength: 200
     },
     thumbnail: {
       type: String,
@@ -39,7 +39,7 @@ const productSchema = new Schema(
       required: true,
       min: 100
     },
-    review: [
+    reviews: [
       {
         comment: String,
         user: Schema.Types.ObjectId,
@@ -48,10 +48,7 @@ const productSchema = new Schema(
     ]
   },
   {
-    timestamps: {
-      createdAt: 'created_at',
-      updatedAt: 'updated_at'
-    }
+    timestamps: true
   }
 );
 

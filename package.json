@@ -8,7 +8,9 @@
   "license": "GNU",
   "private": true,
   "scripts": {
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "seed": "node ./seeders/add.js",
+    "clear": "node ./seeders/remove.js"
   },
   "dependencies": {
     "graphql-yoga": "^1.18.3",
@@ -16,7 +18,6 @@
   },
   "devDependencies": {
     "dotenv": "^8.2.0",
-    "mongoose-data-seed": "^2.1.6",
     "nodemon": "^2.0.4"
   }
 }
