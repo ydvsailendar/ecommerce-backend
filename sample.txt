@@ -1,0 +1,111 @@
+### Operations
+
+mutation($name:String!, $description: String!, $price: Float!, $thumbnail: String!, $count:Int! ){
+  addProduct(name:$name, description:$description, price:$price, count:$count, thumbnail:$thumbnail){
+    price
+    name
+    description
+    thumbnail
+    createdAt
+    updatedAt
+    count
+  }
+}
+
+mutation($id:ID!,$name:String!, $description: String!, $price: Float!, $thumbnail: String!, $count:Int! ){
+  updateProduct(id:$id, name:$name, description:$description, price:$price, count:$count, thumbnail:$thumbnail){
+    price
+    name
+    description
+    thumbnail
+    createdAt
+    updatedAt
+    count
+  }
+}
+
+mutation($id:ID! ){
+  removeProduct(id:$id)
+}
+
+query{
+  Products{
+    _id
+    name
+    description
+    thumbnail
+    price
+    count
+    reviews{
+      rating
+      comment
+      user
+    }
+  }
+}
+
+mutation($user:ID!, $productId: ID!, $comment: String, $rating: Int ){
+  addReview(user:$user, productId: $productId, comment: $comment, rating: $rating){
+		user
+    rating
+    comment
+  }
+}
+
+mutation($user:ID!, $productId: ID!, $comment: String, $rating: Int ){
+  updateReview(user:$user, productId: $productId, comment: $comment, rating: $rating){
+		user
+    rating
+    comment
+  }
+}
+
+mutation($user:ID!, $productId: ID! ){
+  deleteReview(user:$user, productId: $productId)
+}
+
+### Query Variables
+
+- add product
+
+{
+  "name":"notebook",
+  "description": "simple and easy to carry can write using any type of ink pens",
+  "price": 110,
+  "thumbnail": "https://prd-static-default.sf-cdn.com/resources/images/store/2018/global/1140x1140/EMEA/UK/Notebooks/1_hardcover-notebook-1140x1140-20180419.jpg",
+  "count": 12
+}
+
+- update product
+
+{
+  "id": "5f75be6a341f27d149df023b",
+  "name":"notebook",
+  "description": "simple and easy to carry can write using any type of ink pens",
+  "price": 100,
+  "thumbnail": "https://prd-static-default.sf-cdn.com/resources/images/store/2018/global/1140x1140/EMEA/UK/Notebooks/1_hardcover-notebook-1140x1140-20180419.jpg",
+  "count": 40
+}
+
+- remove product
+
+{
+  "id": "5f76c0755d048838a35a6a7d"
+}
+
+- add/update review
+
+{
+  "user": "787856432512345678655678",
+  "productId": "5f76c4d7dd9cb33f8e7dd5e7",
+  "comment": "Updating review because it so much better than i was expecting feel clean and amazing for day to day use",
+  "rating": 5
+}
+
+- delete review
+
+  {
+    "user": "787856432512345678655678",
+  	"productId": "5f76c4d7dd9cb33f8e7dd5e7"
+  }
+

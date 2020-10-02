@@ -123,19 +123,24 @@ const resolvers = {
         if (!comment && !rating) {
           throw Error('Must provide rating or comment!');
         }
-        console.log(
-          product.reviews,
-          product.reviews.filter((item) => String(item.user) !== user)
-        );
         let review;
-        if (comment && !rating) {
-          review = { user, comment };
-        } else if (rating && !comment) {
-          review = { user, rating };
-        } else {
-          review = { user, rating, comment };
-        }
-        product.reviews.push(review);
+        product.reviews.forEach((element, index) => {
+          if (String(element.user) === user) {
+            if (product.reviews[index] === element) {
+              if (comment && !rating) {
+                review = { user, comment };
+                product.reviews[index].comment = comment;
+              } else if (rating && !comment) {
+                review = { user, rating };
+                product.reviews[index].rating = rating;
+              } else {
+                review = { user, comment, rating };
+                product.reviews[index].comment = comment;
+                product.reviews[index].rating = rating;
+              }
+            }
+          }
+        });
         await product.save();
         return review;
       } catch (err) {
@@ -148,12 +153,18 @@ const resolvers = {
         if (!product) {
           throw new Error('Product not found!');
         }
-        if (!review.user) {
+        if (!user) {
           throw Error('Reviewer not found!');
         }
-        product.reviews.filter((item) => item.user !== user);
-        let result = await product.save();
-        return productId;
+        product.reviews.forEach((element, index) => {
+          if (String(element.user) === user) {
+            if (product.reviews[index] === element) {
+              product.reviews.splice(index, 1);
+            }
+          }
+        });
+        await product.save();
+        return user;
       } catch (err) {
         return err;
       }
