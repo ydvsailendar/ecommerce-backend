@@ -4,6 +4,8 @@ const typeDefs = `
     Product(id: ID!): Product! 
     Users(token: String!): [User!]!
     User(token: String! id: ID!): User!
+    MyWishList(token: String!): [Cart!]!
+    MyCart(token: String!): [Cart!]!
   }
 
   type Mutation {
@@ -18,8 +20,13 @@ const typeDefs = `
     updateUser(token: String! phone: String name: String address: String, gender: String, age: Int): User!
     refreshToken(token: String!): TokenParams!
     changePassword(token: String! newPassword: String! oldPassword: String!): String!
-    forgotPassword(token: String! newPassword: String!): String!
+    forgotPassword(email: String! newPassword: String!): String!
     removeUser(token: String! id: ID!): ID!
+    addItemToCart(token: String! productId: ID! ): Cart!
+    addItemToWishList(token: String! productId: ID!): Cart!
+    removeItemFromCart(token: String! cartItemId: ID!): ID!
+    removeItemFromWishList(token: String! cartItemId: ID!): ID!
+    updateItemDetailsInCart(token: String! productId: ID! count: Int!): Cart!
   }
 
   type TokenParams {
@@ -32,16 +39,17 @@ const typeDefs = `
   }
 
   type Product {
-    _id: ID
+    _id: ID!
     name: String!
     description: String!
     thumbnail: String!
-    createdAt: String
-    updatedAt: String
+    createdAt: String!
+    updatedAt: String!
     count: Int!
     stock: Boolean
     price: Float!
     reviews: [Review]
+    discount: String!
   }
 
   type Review {
@@ -51,7 +59,7 @@ const typeDefs = `
   }
 
   type User {
-    _id: ID
+    _id: ID!
     name: String!
     email: String!
     password: String!
@@ -61,8 +69,31 @@ const typeDefs = `
     token: String!
     expiresIn: String!
     phone: String!
-    createdAt: String
-    updatedAt: String
+    createdAt: String!
+    updatedAt: String!
+  }
+
+  type Cart {
+    _id: ID!
+    userId: ID!
+    productId: ID!
+    inWishList: Boolean
+    inCart: Boolean
+    count: Int
+    discount: String
+    deliveryCharge: Int
+    deliveryTime: String
+    deliveryStatus: String
+  }
+
+  type Payment {
+    _id: ID!
+    userId: ID!
+    itemIds: [ID!]!
+    name: String!
+    totalPayable: Int!
+    totalDiscount: String!
+    paymentMethod: String!
   }
 `;
 

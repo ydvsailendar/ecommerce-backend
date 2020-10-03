@@ -47,7 +47,11 @@ const productSchema = new Schema(
         user: Schema.Types.ObjectId,
         rating: Number
       }
-    ]
+    ],
+    discount: {
+      type: String,
+      default: 'N/A'
+    }
   },
   {
     timestamps: true
