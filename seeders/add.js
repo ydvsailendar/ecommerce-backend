@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Product = require('../src/schema/product');
 const User = require('../src/schema/user');
+const Cart = require('../src/schema/cart');
 const {
   Types: { ObjectId }
 } = mongoose;
@@ -14,6 +15,7 @@ mongoose.connect(process.env.URI, {
 
 const products = [
   {
+    _id: ObjectId('111856432512345678655678'),
     name: 'Google Pixel 5',
     description:
       'Google Pixel 5 with the 16MP camera 128GB storage 8GB RAM with fast charing and android 11',
@@ -21,9 +23,11 @@ const products = [
       'https://fdn2.gsmarena.com/vv/pics/google/google-pixel-5-5g-1.jpg',
     count: 10,
     price: 699,
-    reviews: []
+    reviews: [],
+    discount: '5%'
   },
   {
+    _id: ObjectId('111156432512345678655678'),
     name: 'Amazon Echo Dot',
     description:
       'Amazon Echo Dot is a wireless speaker device with premium build quality and best sound with UI for time display and many more',
@@ -31,6 +35,7 @@ const products = [
       'https://images.crutchfieldonline.com/products/2018/45/837/g837EDOT3B-F.jpg',
     count: 6,
     price: 299,
+    discount: '5%',
     reviews: [
       {
         comment: 'Best version of echo device very nice sound',
@@ -45,15 +50,18 @@ const products = [
     ]
   },
   {
+    _id: ObjectId('111856432512345678651111'),
     name: 'Samsung Galaxy Fan Edition(FE)',
     description:
       'Galaxy FE with the same feature from its Flagship variant amazing performance from snapdragon 865 with 5G support and wireless fast charging',
     thumbnail: 'https://www.gizmochina.com/wp-content/uploads/2020/02/2.jpg',
     count: 20,
     price: 699,
-    reviews: []
+    reviews: [],
+    discount: '4%'
   },
   {
+    _id: ObjectId('111856432512345678655111'),
     name: 'Apple MacBook Pro 16',
     description:
       'The new MacBook Pro 16 with 16 inch retina display and amazing keyboard with smooth workload performance',
@@ -74,7 +82,8 @@ const products = [
         user: '656556432512345678654321',
         rating: '3'
       }
-    ]
+    ],
+    discount: 'N/A'
   }
 ];
 
@@ -129,10 +138,36 @@ const users = [
   }
 ];
 
+const carts = [
+  {
+    _id: ObjectId('227856432512345678655622'),
+    userId: ObjectId('787856432512345678655678'),
+    productId: ObjectId('111856432512345678655678'),
+    inWishList: true,
+    inCart: false,
+    count: 1,
+    deliveryCharge: 0,
+    deliveryTime: 'N/A',
+    deliveryStatus: 'N/A'
+  },
+  {
+    _id: ObjectId('222856432512345678655622'),
+    userId: ObjectId('787856432512345678651234'),
+    productId: ObjectId('111856432512345678655111'),
+    inWishList: false,
+    inCart: true,
+    count: 1,
+    deliveryCharge: 100,
+    deliveryTime: '2d',
+    deliveryStatus: 'INPROGRESS'
+  }
+];
+
 (async () => {
   try {
     await Product.create(products);
     await User.create(users);
+    await Cart.create(carts);
     console.log('seeded');
     process.exit();
   } catch (err) {

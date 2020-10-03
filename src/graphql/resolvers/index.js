@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 require('dotenv').config();
 const Product = require('../../schema/product');
 const User = require('../../schema/user');
+const Cart = require('../../schema/cart');
 const mailer = require('../../utils');
 
 mongoose.connect(process.env.URI, {
@@ -54,6 +55,40 @@ const resolvers = {
           throw new Error('User not found!');
         }
         return user;
+      } catch (err) {
+        return err;
+      }
+    },
+    MyWishList: async (_, { token }) => {
+      try {
+        let decoded = await jwt.verify(token, process.env.SECRET);
+        let email = decoded.email;
+        let userExists = await User.findOne({ email });
+        if (!userExists) {
+          throw new Error('Invalid Token!');
+        }
+        let wishList = await Cart.find({
+          userId: userExists._id,
+          inWishList: true
+        }).lean();
+        return wishList;
+      } catch (err) {
+        return err;
+      }
+    },
+    MyCart: async (_, { token }) => {
+      try {
+        let decoded = await jwt.verify(token, process.env.SECRET);
+        let email = decoded.email;
+        let userExists = await User.findOne({ email });
+        if (!userExists) {
+          throw new Error('Invalid Token!');
+        }
+        let cart = await Cart.find({
+          userId: userExists._id,
+          inCart: true
+        }).lean();
+        return cart;
       } catch (err) {
         return err;
       }
@@ -325,9 +360,7 @@ const resolvers = {
       let messageId = await mailer(email, subject, message);
       return messageId;
     },
-    forgotPassword: async (_, { token, newPassword }) => {
-      let decoded = await jwt.verify(token, process.env.SECRET);
-      let email = decoded.email;
+    forgotPassword: async (_, { email, newPassword }) => {
       let userExists = await User.findOne({ email });
       if (!userExists) {
         throw new Error("User doesn't exist!");
@@ -408,6 +441,119 @@ const resolvers = {
       }
       await user.remove();
       return user._id;
+    },
+    addItemToWishList: async (_, { token, productId }) => {
+      try {
+        const productExists = await Product.findById(productId).lean();
+        if (!productExists) {
+          throw new Error("Product doesn't exist");
+        }
+        const decoded = await jwt.verify(token, process.env.SECRET);
+        const email = decoded.email;
+        const userExists = await User.findOne({ email }).lean();
+        if (!userExists) {
+          throw new Error('Invalid Token!');
+        }
+        let wishList = new Cart({
+          userId: userExists._id,
+          productId,
+          inWishList: true
+        });
+        const result = await wishList.save();
+        return result;
+      } catch (err) {
+        return err;
+      }
+    },
+    addItemToCart: async (_, { token, productId }) => {
+      try {
+        const productExists = await Product.findById(productId).lean();
+        if (!productExists) {
+          throw new Error("Product doesn't exist");
+        }
+        const decoded = await jwt.verify(token, process.env.SECRET);
+        const email = decoded.email;
+        const userExists = await User.findOne({ email }).lean();
+        if (!userExists) {
+          throw new Error('Invalid Token!');
+        }
+        let deliveryCharge = 100;
+        const time = Math.floor(Math.random() * 10) + 1;
+        if (time > 4) {
+          deliveryCharge = 50;
+        }
+        const deliveryTime = `${time}h`;
+        let wishList = new Cart({
+          userId: userExists._id,
+          productId,
+          inCart: true,
+          deliveryTime,
+          deliveryCharge
+        });
+        const result = await wishList.save();
+        return result;
+      } catch (err) {
+        return err;
+      }
+    },
+    updateItemDetailsInCart: async (_, { token, productId, count }) => {
+      try {
+        const productExists = await Product.findById(productId).lean();
+        if (!productExists) {
+          throw new Error("Product doesn't exist");
+        }
+        const decoded = await jwt.verify(token, process.env.SECRET);
+        const email = decoded.email;
+        const userExists = await User.findOne({ email }).lean();
+        if (!userExists) {
+          throw new Error('Invalid Token!');
+        }
+        let cart = await Card.findOne({
+          userId: userExists._id,
+          productId: productExists._id
+        });
+        cart.count === count;
+        let result = await cart.save();
+        return result;
+      } catch (err) {
+        return err;
+      }
+    },
+    removeItemFromWishList: async (_, { token, cartItemId }) => {
+      try {
+        const wishListExists = await Cart.findById(cartItemId);
+        if (!wishListExists) {
+          throw new Error("Item doesn't exist in the WishList");
+        }
+        const decoded = await jwt.verify(token, process.env.SECRET);
+        const email = decoded.email;
+        const userExists = await User.findOne({ email }).lean();
+        if (!userExists) {
+          throw new Error('Invalid Token!');
+        }
+        await wishListExists.remove();
+        return wishListExists._id;
+      } catch (err) {
+        return err;
+      }
+    },
+    removeItemFromCart: async (_, { token, productId }) => {
+      try {
+        const cardExists = await Cart.findById(cartItemId);
+        if (!cardExists) {
+          throw new Error("Item doesn't exist in the Cart");
+        }
+        const decoded = await jwt.verify(token, process.env.SECRET);
+        const email = decoded.email;
+        const userExists = await User.findOne({ email }).lean();
+        if (!userExists) {
+          throw new Error('Invalid Token!');
+        }
+        await cardExists.remove();
+        return cardExists._id;
+      } catch (err) {
+        return err;
+      }
     }
   },
   Subscription: {
