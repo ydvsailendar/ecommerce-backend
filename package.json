@@ -10,11 +10,15 @@
   "scripts": {
     "dev": "nodemon server.js",
     "seed": "node ./seeders/add.js",
-    "clear": "node ./seeders/remove.js"
+    "clear": "node ./seeders/remove.js",
+    "account": "node ./seeders/account.js"
   },
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "graphql-yoga": "^1.18.3",
-    "mongoose": "^5.10.7"
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.10.7",
+    "nodemailer": "^6.4.13"
   },
   "devDependencies": {
     "dotenv": "^8.2.0",

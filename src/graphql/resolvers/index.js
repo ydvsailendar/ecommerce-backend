@@ -1,6 +1,10 @@
 const mongoose = require('mongoose');
-const Product = require('../../schema/product');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 require('dotenv').config();
+const Product = require('../../schema/product');
+const User = require('../../schema/user');
+const mailer = require('../../utils');
 
 mongoose.connect(process.env.URI, {
   useNewUrlParser: true,
@@ -23,11 +27,50 @@ const resolvers = {
       } catch (err) {
         return err;
       }
+    },
+    Users: async (_, { token }) => {
+      try {
+        let decoded = await jwt.verify(token, process.env.SECRET);
+        let email = decoded.email;
+        let userExists = await User.findOne({ email });
+        if (!userExists) {
+          throw new Error('Invalid Token!');
+        }
+        return User.find().lean();
+      } catch (err) {
+        return err;
+      }
+    },
+    User: async (_, { id, token }) => {
+      try {
+        let decoded = await jwt.verify(token, process.env.SECRET);
+        let email = decoded.email;
+        let userExists = await User.findOne({ email });
+        if (!userExists) {
+          throw new Error('Invalid Token!');
+        }
+        let user = await User.findById(id).lean();
+        if (!user) {
+          throw new Error('User not found!');
+        }
+        return user;
+      } catch (err) {
+        return err;
+      }
     }
   },
   Mutation: {
-    addProduct: async (_, { name, description, price, thumbnail, count }) => {
+    addProduct: async (
+      _,
+      { token, name, description, price, thumbnail, count }
+    ) => {
       try {
+        let decoded = await jwt.verify(token, process.env.SECRET);
+        let email = decoded.email;
+        let userExists = await User.findOne({ email });
+        if (!userExists) {
+          throw new Error('Invalid Token!');
+        }
         if (!name || !description || !price || !count || !thumbnail) {
           throw new Error('Missing product properties!');
         }
@@ -44,8 +87,14 @@ const resolvers = {
         return err;
       }
     },
-    removeProduct: async (_, { id }) => {
+    removeProduct: async (_, { token, id }) => {
       try {
+        let decoded = await jwt.verify(token, process.env.SECRET);
+        let email = decoded.email;
+        let userExists = await User.findOne({ email });
+        if (!userExists) {
+          throw new Error('Invalid Token!');
+        }
         let product = await Product.findById(id);
         if (!product) {
           throw new Error('Product not found!');
@@ -58,9 +107,15 @@ const resolvers = {
     },
     updateProduct: async (
       _,
-      { id, name, description, price, count, thumbnail }
+      { token, id, name, description, price, count, thumbnail }
     ) => {
       try {
+        let decoded = await jwt.verify(token, process.env.SECRET);
+        let email = decoded.email;
+        let userExists = await User.findOne({ email });
+        if (!userExists) {
+          throw new Error('Invalid Token!');
+        }
         if (!id || !name || !description || !price || !count || !thumbnail) {
           throw new Error('Missing product properties!');
         }
@@ -78,8 +133,14 @@ const resolvers = {
         return err;
       }
     },
-    addReview: async (_, { user, comment, rating, productId }) => {
+    addReview: async (_, { token, user, comment, rating, productId }) => {
       try {
+        let decoded = await jwt.verify(token, process.env.SECRET);
+        let email = decoded.email;
+        let userExists = await User.findOne({ email });
+        if (!userExists) {
+          throw new Error('Invalid Token!');
+        }
         let product = await Product.findById(productId);
         if (!product) {
           throw new Error('Product not found!');
@@ -111,8 +172,14 @@ const resolvers = {
         return err;
       }
     },
-    updateReview: async (_, { user, comment, rating, productId }) => {
+    updateReview: async (_, { token, user, comment, rating, productId }) => {
       try {
+        let decoded = await jwt.verify(token, process.env.SECRET);
+        let email = decoded.email;
+        let userExists = await User.findOne({ email });
+        if (!userExists) {
+          throw new Error('Invalid Token!');
+        }
         let product = await Product.findById(productId);
         if (!product) {
           throw new Error('Product not found!');
@@ -147,8 +214,14 @@ const resolvers = {
         return err;
       }
     },
-    deleteReview: async (_, { user, productId }) => {
+    deleteReview: async (_, { token, user, productId }) => {
       try {
+        let decoded = await jwt.verify(token, process.env.SECRET);
+        let email = decoded.email;
+        let userExists = await User.findOne({ email });
+        if (!userExists) {
+          throw new Error('Invalid Token!');
+        }
         let product = await Product.findById(productId);
         if (!product) {
           throw new Error('Product not found!');
@@ -168,11 +241,178 @@ const resolvers = {
       } catch (err) {
         return err;
       }
+    },
+    signUp: async (
+      _,
+      { name, email, password, gender, age, address, phone }
+    ) => {
+      try {
+        if (!name || !email || !password || !gender || !age || !address) {
+          throw new Error('Missing user fields!');
+        }
+        if (phone.length <= 10) {
+          throw new Error('Please provide country code for phone number!');
+        }
+        let userExists = await User.findOne({ email }).lean();
+        if (userExists) {
+          throw new Error('User already Exists!');
+        }
+        let salt = await bcrypt.genSaltSync(10);
+        let hash = await bcrypt.hashSync(password, salt);
+        let token = await jwt.sign({ email }, process.env.SECRET, {
+          expiresIn: '1h'
+        });
+        let date = new Date();
+        let expiresIn = new Date(date.setMinutes(date.getMinutes() + 60));
+        let user = new User({
+          name,
+          email,
+          password: hash,
+          gender,
+          age,
+          address,
+          token,
+          phone,
+          expiresIn
+        });
+        const subject = 'User signed up';
+        const message = `User has been successfully created your username is ${email} and password is ${password}. You can use you email/phone for login.`;
+        await user.save();
+        await mailer(email, subject, message);
+        return { token, expiresIn };
+      } catch (err) {
+        return err;
+      }
+    },
+    updateUser: async (_, { name, token, gender, age, address, phone }) => {
+      try {
+        if (!name || !phone || !gender || !age || !address) {
+          throw new Error('Missing user fields!');
+        }
+        let decoded = await jwt.verify(token, process.env.SECRET);
+        let email = decoded.email;
+        let userExists = await User.findOne({ email }).lean();
+        if (!userExists) {
+          throw new Error('Invalid Token!');
+        }
+        let updatedUser = await User.findByIdAndUpdate(
+          userExists._id,
+          { name, phone, gender, age, address },
+          { new: true }
+        );
+        return updatedUser;
+      } catch (err) {
+        return err;
+      }
+    },
+    changePassword: async (_, { token, oldPassword, newPassword }) => {
+      let decoded = await jwt.verify(token, process.env.SECRET);
+      let email = decoded.email;
+      let userExists = await User.findOne({ email });
+      if (!userExists) {
+        throw new Error('Invalid Token!');
+      }
+      let isValid = await bcrypt.compareSync(oldPassword, userExists.password);
+      if (!isValid) {
+        throw new Error("Password doesn't match!");
+      }
+      const subject = 'Password Change';
+      const message = `Your password is changed for email user ${email} successfully. The new password is ${newPassword}`;
+      const salt = await bcrypt.genSaltSync(10);
+      const hash = await bcrypt.hashSync(newPassword, salt);
+      userExists.password = hash;
+      await userExists.save();
+      let messageId = await mailer(email, subject, message);
+      return messageId;
+    },
+    forgotPassword: async (_, { token, newPassword }) => {
+      let decoded = await jwt.verify(token, process.env.SECRET);
+      let email = decoded.email;
+      let userExists = await User.findOne({ email });
+      if (!userExists) {
+        throw new Error("User doesn't exist!");
+      }
+      const subject = 'Forgot Password Change';
+      const message = `Your password is changed for email user ${email} successfully. The new password is ${newPassword}`;
+      const salt = await bcrypt.genSaltSync(10);
+      const hash = await bcrypt.hashSync(newPassword, salt);
+      userExists.password = hash;
+      await userExists.save();
+      const messageId = await mailer(email, subject, message);
+      return messageId;
+    },
+    signIn: async (_, { email, password, phone }) => {
+      try {
+        if ((!email || !phone) && !password) {
+          throw new Error('Either email or phone with password is required!');
+        }
+        let params = {};
+        if (email) {
+          params = { email };
+        }
+        if (phone) {
+          params = { phone };
+        }
+        let userExists = await User.findOne(params);
+        if (!userExists) {
+          throw new Error("User doesn't exist!");
+        }
+        let isValid = await bcrypt.compareSync(password, userExists.password);
+        if (!isValid) {
+          throw new Error("Password doesn't match!");
+        }
+        let token = await jwt.sign({ email }, process.env.SECRET, {
+          expiresIn: '1h'
+        });
+        let date = new Date();
+        let expiresIn = new Date(date.setMinutes(date.getMinutes() + 60));
+        userExists.expiresIn = expiresIn;
+        userExists.token = token;
+        await userExists.save();
+        return { token, expiresIn };
+      } catch (err) {
+        return err;
+      }
+    },
+    refreshToken: async (_, { token }) => {
+      try {
+        let decoded = await jwt.verify(token, process.env.SECRET);
+        let email = decoded.email;
+        let userExists = await User.findOne({ email });
+        if (!userExists) {
+          throw new Error('Invalid Token!');
+        }
+        let accessToken = await jwt.sign({ email }, process.env.SECRET, {
+          expiresIn: '1h'
+        });
+        let date = new Date();
+        let expiresIn = new Date(date.setMinutes(date.getMinutes() + 60));
+        userExists.expiresIn = expiresIn;
+        userExists.token = accessToken;
+        await userExists.save();
+        return { token: accessToken, expiresIn };
+      } catch (err) {
+        return err;
+      }
+    },
+    removeUser: async (_, { token, id }) => {
+      let decoded = await jwt.verify(token, process.env.SECRET);
+      let email = decoded.email;
+      let userExists = await User.findOne({ email });
+      if (!userExists) {
+        throw new Error('Invalid Token!');
+      }
+      let user = await User.findById(id);
+      if (!user) {
+        throw new Error("User doesn't exist");
+      }
+      await user.remove();
+      return user._id;
     }
   },
   Subscription: {
     Products: () => {
-      return Product.find().lean();
+      return Product.find().lean(); // TODO
     }
   }
 };

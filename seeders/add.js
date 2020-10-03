@@ -1,5 +1,9 @@
 const mongoose = require('mongoose');
 const Product = require('../src/schema/product');
+const User = require('../src/schema/user');
+const {
+  Types: { ObjectId }
+} = mongoose;
 require('dotenv').config();
 
 mongoose.connect(process.env.URI, {
@@ -73,9 +77,61 @@ const products = [
   }
 ];
 
+const users = [
+  {
+    _id: ObjectId('787856432512345678651234'),
+    name: 'khami gokosi',
+    email: 'wizzboy2368@gmail.com',
+    password: 'Bottle123#',
+    address: 'Pratappur-5, Nawalparasi, Nepal',
+    age: 22,
+    gender: 'Male',
+    phone: '+97798490343013',
+    token: '3872893748df78w787dsd8fd78gds7fg87f89g7fdn87b89db78g86g8dg78',
+    expiresIn: 'Fri Oct 02 2020 14:42:45 GMT+0545 (Nepal Time)'
+  },
+  {
+    _id: ObjectId('787856432512345678654321'),
+    name: 'shailendra yadav',
+    email: 'ydvsailendar0905@gmail.com',
+    password: 'Bottle123#',
+    address: 'Pratappur-1, Nawalparasi, Nepal',
+    age: 25,
+    gender: 'Male',
+    phone: '+9779811440512',
+    token: '3872893748df78w787dsd8fd78gds7fg87f89g7fdn87b89db78g86sfsdfsdfsd',
+    expiresIn: 'Fri Oct 02 2020 18:42:45 GMT+0545 (Nepal Time)'
+  },
+  {
+    _id: ObjectId('787856432512345678655678'),
+    name: 'pragya yadav',
+    email: 'pragyayadav2055@gmail.com',
+    password: 'Pragya123#',
+    address: 'Devgaun-17, Nawalparasi, Nepal',
+    age: 22,
+    gender: 'Female',
+    phone: '+9779840000000',
+    token: '2272893748df78w787dsd8fd78gds7fg87f89g7fdn87b89db78g86g8dg78',
+    expiresIn: 'Fri Oct 02 2020 16:42:45 GMT+0545 (Nepal Time)'
+  },
+  {
+    _id: ObjectId('656556432512345678654321'),
+    name: 'sandhya yadav',
+    email: 'sandhyayadav2054@gmail.com',
+    password: 'Sandhya123#',
+    address: 'Pratappur-1, Nawalparasi, Nepal',
+    age: 23,
+    gender: 'Female',
+    phone: '+9779810101010',
+    token: '3872893748df78w787dsd8fd78gds7fg87f89g7fdn87b89db33g86g8dg78',
+    expiresIn: 'Fri Oct 02 2020 17:42:45 GMT+0545 (Nepal Time)'
+  }
+];
+
 (async () => {
   try {
     await Product.create(products);
+    await User.create(users);
     console.log('seeded');
     process.exit();
   } catch (err) {
