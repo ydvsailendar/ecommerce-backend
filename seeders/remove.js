@@ -12,6 +12,8 @@ mongoose.connect(process.env.URI, {
   try {
     await Product.deleteMany();
     await User.deleteMany();
+    await User.collection.drop();
+    await Product.collection.drop();
     console.log('cleared');
     process.exit();
   } catch (err) {

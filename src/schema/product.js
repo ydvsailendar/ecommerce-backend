@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+mongoose.set('useCreateIndex', true);
 const Schema = mongoose.Schema;
 
 const productSchema = new Schema(
@@ -7,7 +8,8 @@ const productSchema = new Schema(
       type: String,
       required: true,
       minlength: 6,
-      maxlength: 30
+      maxlength: 30,
+      unique: true
     },
     description: {
       type: String,

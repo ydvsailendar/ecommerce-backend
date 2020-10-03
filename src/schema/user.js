@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+mongoose.set('useCreateIndex', true);
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema(
@@ -12,6 +13,7 @@ const userSchema = new Schema(
     email: {
       type: String,
       required: true,
+      unique: true,
       match: /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i
     },
     password: {
@@ -33,7 +35,8 @@ const userSchema = new Schema(
       type: String,
       required: true,
       minlength: 8,
-      maxlength: 15
+      maxlength: 15,
+      unique: true
     },
     age: {
       type: Number,
