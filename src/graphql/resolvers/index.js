@@ -275,7 +275,7 @@ const resolvers = {
           phone,
           expiresIn
         });
-        const subject = 'User signed up';
+        const subject = 'User SignUp';
         const message = `User has been successfully created your username is ${email} and password is ${password}. You can use you email/phone for login.`;
         await user.save();
         await mailer(email, subject, message);

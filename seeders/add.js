@@ -8,7 +8,8 @@ require('dotenv').config();
 
 mongoose.connect(process.env.URI, {
   useNewUrlParser: true,
-  useUnifiedTopology: true
+  useUnifiedTopology: true,
+  useFindAndModify: false
 });
 
 const products = [
@@ -81,8 +82,8 @@ const users = [
   {
     _id: ObjectId('787856432512345678651234'),
     name: 'khami gokosi',
-    email: 'wizzboy2368@gmail.com',
-    password: 'Bottle123#',
+    email: 'khamisama@gmail.com',
+    password: 'Khami123#',
     address: 'Pratappur-5, Nawalparasi, Nepal',
     age: 22,
     gender: 'Male',
@@ -92,9 +93,9 @@ const users = [
   },
   {
     _id: ObjectId('787856432512345678654321'),
-    name: 'shailendra yadav',
-    email: 'ydvsailendar0905@gmail.com',
-    password: 'Bottle123#',
+    name: 'binod yadav',
+    email: 'binodkyadav@gmail.com',
+    password: 'Binod123#',
     address: 'Pratappur-1, Nawalparasi, Nepal',
     age: 25,
     gender: 'Male',

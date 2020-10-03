@@ -10,8 +10,7 @@
   "scripts": {
     "dev": "nodemon server.js",
     "seed": "node ./seeders/add.js",
-    "clear": "node ./seeders/remove.js",
-    "account": "node ./seeders/account.js"
+    "clear": "node ./seeders/remove.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
