@@ -9,8 +9,8 @@ const typeDefs = `
   }
 
   type Mutation {
-    addProduct(token: String! name: String! description: String! price: Float! thumbnail: String! count: Int!): Product!
-    updateProduct(token: String! id: ID! name: String! description: String! price: Float! thumbnail: String! count: Int!): Product!
+    addProduct(token: String! discount: Int! tags: [String!] name: String! description: String! price: Float! thumbnail: String! count: Int!): Product!
+    updateProduct(token: String! discount: Int! id: ID! tags: [String!] name: String! description: String! price: Float! thumbnail: String! count: Int!): Product!
     removeProduct(token: String! id: ID!): ID!
     addReview(token: String! user: ID! comment: String rating: Int productId: ID!): Review!
     updateReview(token: String! user: ID! comment: String rating: Int productId: ID!): Review!
@@ -49,7 +49,8 @@ const typeDefs = `
     stock: Boolean
     price: Float!
     reviews: [Review]
-    discount: String!
+    discount: Int!
+    tags: [String!]
   }
 
   type Review {

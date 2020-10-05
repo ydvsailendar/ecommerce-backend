@@ -20,11 +20,12 @@ const products = [
     description:
       'Google Pixel 5 with the 16MP camera 128GB storage 8GB RAM with fast charing and android 11',
     thumbnail:
-      'https://fdn2.gsmarena.com/vv/pics/google/google-pixel-5-5g-1.jpg',
+      'https://cdn57.androidauthority.net/wp-content/uploads/2020/08/Google-Pixel-5-Renders.jpg',
     count: 10,
     price: 699,
     reviews: [],
-    discount: '5%'
+    discount: 5,
+    tags: ['Phone']
   },
   {
     _id: ObjectId('111156432512345678655678'),
@@ -35,7 +36,8 @@ const products = [
       'https://images.crutchfieldonline.com/products/2018/45/837/g837EDOT3B-F.jpg',
     count: 6,
     price: 299,
-    discount: '5%',
+    discount: 5,
+    tags: ['Bluetooth', 'Speaker'],
     reviews: [
       {
         comment: 'Best version of echo device very nice sound',
@@ -54,11 +56,13 @@ const products = [
     name: 'Samsung Galaxy Fan Edition(FE)',
     description:
       'Galaxy FE with the same feature from its Flagship variant amazing performance from snapdragon 865 with 5G support and wireless fast charging',
-    thumbnail: 'https://www.gizmochina.com/wp-content/uploads/2020/02/2.jpg',
+    thumbnail:
+      'https://www.androidpolice.com/wp-content/uploads/2020/08/17/SamsungGalaxyS20FE-01.png',
     count: 20,
     price: 699,
     reviews: [],
-    discount: '4%'
+    discount: 4,
+    tags: ['Phone']
   },
   {
     _id: ObjectId('111856432512345678655111'),
@@ -83,7 +87,8 @@ const products = [
         rating: '3'
       }
     ],
-    discount: 'N/A'
+    discount: 0,
+    tags: ['Lactop']
   }
 ];
 
