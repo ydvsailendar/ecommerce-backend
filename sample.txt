@@ -93,8 +93,8 @@ query{
   }
 }
 
-query($id:ID!){
-  User(id:$id){
+query($token:String!){
+  User(token:$token){
     _id
     address
     name

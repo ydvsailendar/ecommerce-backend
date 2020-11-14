@@ -42,7 +42,7 @@ const resolvers = {
         return err;
       }
     },
-    User: async (_, { id, token }) => {
+    User: async (_, { token }) => {
       try {
         let decoded = await jwt.verify(token, process.env.SECRET);
         let email = decoded.email;
@@ -50,11 +50,7 @@ const resolvers = {
         if (!userExists) {
           throw new Error('Invalid Token!');
         }
-        let user = await User.findById(id).lean();
-        if (!user) {
-          throw new Error('User not found!');
-        }
-        return user;
+        return userExists;
       } catch (err) {
         return err;
       }

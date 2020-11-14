@@ -3,7 +3,7 @@ const typeDefs = `
     Products: [Product!]!
     Product(id: ID!): Product! 
     Users(token: String!): [User!]!
-    User(token: String! id: ID!): User!
+    User(token: String!): User!
     MyWishList(token: String!): [Cart!]!
     MyCart(token: String!): [Cart!]!
   }
